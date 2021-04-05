@@ -25,9 +25,11 @@ class ContactForm extends Component {
 
     const { name, number } = this.state;
 
-    this.props.onSubmit(name, number);
+    if (!name) {
+      return;
+    }
 
-    const existingContact = this.state.contacts.find(
+    const existingContact = this.props.state.contacts.items.find(
       contact => contact.name === name,
     );
 
@@ -36,7 +38,13 @@ class ContactForm extends Component {
       return;
     }
 
-    if (name) this.setState({ name: '', number: '' });
+    this.props.onSubmit(name, number);
+
+    this.reset();
+  };
+
+  reset = () => {
+    this.setState({ name: '', number: '' });
   };
 
   render() {
@@ -70,8 +78,12 @@ class ContactForm extends Component {
   }
 }
 
+const mapStateToProps = state => ({
+  state,
+});
+
 const mapDispatchToProps = dispatch => ({
   onSubmit: (name, number) => dispatch(contactActions.addContact(name, number)),
 });
 
-export default connect(null, mapDispatchToProps)(ContactForm);
+export default connect(mapStateToProps, mapDispatchToProps)(ContactForm);
